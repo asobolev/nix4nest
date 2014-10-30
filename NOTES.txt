@@ -1,0 +1,93 @@
+
+problem:
+- nest does not record weights, stimulus, neuronal parameters, only recording devices 
+- data in diff files for each recording device
+- data stored as ascii text, inefficient
+- no related metadata is stored
+
+
+current way to store:
+- format is binary, not documented - hard to understand later
+- simulation results are stored in separate files, even split in chunks
+- simulation profile is stored separately
+
+
+- nest recommends to use Python class layer for managing parameters, model variations and resulting datasets (chapter 8)
+    http://www.nest-initiative.org/images/6/61/NEST_By_Example-2-2-2.pdf
+
+- spike detector can have a label
+
+--------------------------------------------------------------------------------
+
+
+NEST Persistence: an implementation of the interface that operates with nest 
+functions to build objects for later serialization / deserialization
+    IAFNeuron(INode): __init__(nest_id)
+    NestConnection(IConnection): __init__(source_ids, target_ids) ...
+    Multimeter(IDevice): __init__(nest_id) ...
+    SpikeDetector(IDevice): __init__(nest_id) ...
+    WeightMatrix(IWeights): __init__(??) ...
+
+
+an interface that knows how to serialize an object
+    INode
+        name()          -> id as string
+        properties()    -> dict (?)
+
+    IConnection
+        name()          -> id as string
+        source()        -> INode? with NIX source_id
+        target()        -> INode? with NIX source_id
+        properties()    -> dict (?)
+
+    ISignal
+        name()          -> id as string
+        source()        -> INode? with NIX source_id
+        times()
+        unit()
+        values()
+        unit()
+
+    ISpikeTrain
+        name()          -> id as string
+        source()        -> INode? with NIX source_id
+        events()
+        unit()
+
+    IWeights
+        ...
+
+
+    # ----------------------------------
+    IDevice
+        name()          -> id as string
+        observable()
+        senders()
+        times()
+        values()        -> what if many recordables?
+
+
+
+a NestBlock that takes objects that implements an interface and
+serializes / deserializes it
+
+    all nix functions like searching etc.
+    so inherit? from nix::Block
+    do NOT inherit
+
+    create_node
+    create_connection
+    create_weights
+
+
+    block::nodes()
+    block::connections()
+    block::weights()
+    block::signals()
+    block::spiketrains()
+
+
+
+
+Override (or monkey patch?) Nix File create_block and blocks to create 
+proper NestBlocks
