@@ -1,7 +1,9 @@
+from __future__ import absolute_import
+
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 
-class INode():
+class INode:
     """ An Interface for any NEST node to be serialized with NIX. """
 
     __metaclass__ = ABCMeta

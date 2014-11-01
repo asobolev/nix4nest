@@ -1,8 +1,10 @@
-from interface.INode import INode
+from __future__ import absolute_import
+
 from nix import Value
-from utils import ensure_nest_block
 
 import nest
+
+from nix4nest.interface.inode import INode
 
 
 class IAFNeuron(INode):
@@ -36,25 +38,23 @@ class IAFNeuron(INode):
         :param nest_id: ID of the NEST Node
         :return:        an instance of <INode> object.
         """
-        # TODO make decorator
-        ensure_nest_block(where)
+        assert(where.metadata is not None)
 
         # check if neuron already exist in sources
         if len(where.find_sources(lambda x: x.name == str(nest_id))) > 0:
             raise ValueError("Neuron with ID %s already exist" % nest_id)
 
         # check if neuron already exist in metadata
-        sources = where.metadata.find_sections(lambda x: x.name == 'sources')
-        if len(sources.find_sections(lambda x: x.name == str(nest_id))) > 0:
+        sources = where.metadata.find_sections(lambda x: x.name == 'sources')[0]
+        if sources.find_sections(lambda x: x.name == str(nest_id)):
             raise ValueError("Metadata for neuron with ID %s already exist" % nest_id)
 
         source = where.create_source(str(nest_id), 'iaf_neuron')
-        metadata = sources.create_section(str(nest_id), 'iaf_neuron')
-        source.metadata = metadata
+        source.metadata = sources.create_section(str(nest_id), 'iaf_neuron')
 
         properties = dict(nest.GetStatus([nest_id])[0])
         for k, v in properties.items():
-            value = cls._special_attrs[k](v) if k in properties else Value(v)
-            metadata.create_property(k, value)
+            value = cls._special_attrs[k](v) if k in cls._special_attrs else Value(v)
+            source.metadata.create_property(str(k), value)
 
         return cls(source)

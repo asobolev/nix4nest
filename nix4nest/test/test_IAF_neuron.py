@@ -1,8 +1,10 @@
 import unittest
+
 import nest
 import nix
 
-from nest_api.IAFNeuron import IAFNeuron
+from nix4nest.nest_api.iafneuron import IAFNeuron
+from nix4nest.nest_api.utils import ensure_nest_block
 
 
 class TestIAFNeuron(unittest.TestCase):
@@ -15,6 +17,8 @@ class TestIAFNeuron(unittest.TestCase):
         self.file = nix.File.open("/tmp/unittest.h5", nix.FileMode.Overwrite)
         self.block = self.file.create_block("test block", "recordingsession")
 
+        ensure_nest_block(self.file, self.block)
+
     def tearDown(self):
         del self.file.blocks[self.block.id]
         self.file.close()
@@ -25,4 +29,4 @@ class TestIAFNeuron(unittest.TestCase):
         assert(neuron.name == str(self.nest_id))
 
         for k in nest.GetStatus([self.nest_id])[0].keys():
-            assert(neuron.properties.has_property_by_name(k))
+            assert(neuron.properties.has_property_by_name(str(k)))
