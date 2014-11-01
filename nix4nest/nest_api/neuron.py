@@ -1,13 +1,11 @@
 from __future__ import absolute_import
 
 from nix import Value
-
+from nix4nest.interface.inode import INode
 import nest
 
-from nix4nest.interface.inode import INode
 
-
-class IAFNeuron(INode):
+class Neuron(INode):
 
     _special_attrs = {
         'model': lambda x: Value(str(x)),
@@ -49,8 +47,8 @@ class IAFNeuron(INode):
         if sources.find_sections(lambda x: x.name == str(nest_id)):
             raise ValueError("Metadata for neuron with ID %s already exist" % nest_id)
 
-        source = where.create_source(str(nest_id), 'iaf_neuron')
-        source.metadata = sources.create_section(str(nest_id), 'iaf_neuron')
+        source = where.create_source(str(nest_id), 'neuron')
+        source.metadata = sources.create_section(str(nest_id), 'neuron')
 
         properties = dict(nest.GetStatus([nest_id])[0])
         for k, v in properties.items():
