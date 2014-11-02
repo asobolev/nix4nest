@@ -35,19 +35,19 @@ class NestFactory:
 
         properties = dict(nest.GetStatus([nest_id])[0])
 
-        assert('model' in properties, "Cannot determine model")
+        assert('model' in properties), "Cannot determine model"
         assert(str(properties['model']) in NestFactory.classes)
 
         node = NestFactory.classes[str(properties['model'])](nest_id)
 
         # check if node already exist in sources
         if len(where.find_sources(lambda x: x.name == node.name)) > 0:
-            raise ValueError("Neuron with ID %s already exist" % nest_id)
+            raise ValueError("Neuron with ID %d already exist" % nest_id)
 
         # check if node already exist in metadata
         sources = where.metadata.find_sections(lambda x: x.name == 'neurons')[0]
         if sources.find_sections(lambda x: x.name == node.name):
-            raise ValueError("Metadata for neuron with ID %s already exist"
+            raise ValueError("Metadata for neuron with ID %d already exist"
                              % nest_id)
 
         source = where.create_source(node.name, 'neuron')
@@ -74,28 +74,35 @@ class NestFactory:
         assert(type(source_id) == int)
         assert(type(target_id) == int)
 
-        name = "%s_%s" % (str(source_id), str(target_id))
+        nest_conn = nest.GetConnections([source_id], [target_id])
+        if not nest_conn:
+            raise ValueError("No connection between neurons %d and %d" %
+                             (source_id, target_id))
+
+        properties = dict(nest.GetStatus(nest_conn)[0])
+
+        assert('synapse_model' in properties), "Cannot determine model"
+        assert(str(properties['synapse_model']) in NestFactory.classes)
+
+        cls = NestFactory.classes[str(properties['synapse_model'])]
+        connection = cls(source_id, target_id)
 
         # check if connection already exist
-        if len(where.find_sources(lambda x: x.name == name)) > 0:
-            raise ValueError("Connection between %s and %s already exist" %
+        if len(where.find_sources(lambda x: x.name == connection.name)) > 0:
+            raise ValueError("Connection between %d and %d already exist" %
                              (source_id, target_id))
 
         # check if connection already exist in metadata
         conns = where.metadata.find_sections(lambda x: x.name == 'connections')[0]
-        if conns.find_sections(lambda x: x.name == name):
-            raise ValueError("Metadata for connection between %s and %s already"
+        if conns.find_sections(lambda x: x.name == connection.name):
+            raise ValueError("Metadata for connection between %d and %d already"
                              "exist" % (source_id, target_id))
 
-        source = where.create_source(name, 'connection')
-        source.metadata = conns.create_section(name, 'connection')
+        source = where.create_source(connection.name, 'connection')
+        source.metadata = conns.create_section(connection.name, 'connection')
 
-        nest_conn = nest.GetConnections([source_id], [target_id])
-        properties = dict(nest.GetStatus(nest_conn)[0])
-
-        for k, v in properties.items():
-            is_special = k in Node._special_attrs
-            value = Connection._special_attrs[k](v) if is_special else nix.Value(v)
-            source.metadata.create_property(str(k), value)
+        for k, v in connection.properties.items():
+            value = [nix.Value(x) for x in v] if type(v) == list else nix.Value(v)
+            source.metadata.create_property(k, value)
 
         return Connection(source)

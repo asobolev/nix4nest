@@ -10,6 +10,7 @@ class StaticSynapse(IConnection):
         'synapse_model': lambda x: str(x),
         'node_type': lambda x: str(x)
     }
+    _properties = {}
 
     def __init__(self, source_id, target_id):
         super(StaticSynapse, self).__init__(source_id, target_id)
@@ -17,6 +18,7 @@ class StaticSynapse(IConnection):
         self.source_id = source_id
         self.target_id = target_id
 
+    @property
     def _nest_properties(self):
         nest_conn = nest.GetConnections([self.source_id], [self.target_id])
         return dict(nest.GetStatus(nest_conn)[0])
@@ -28,12 +30,12 @@ class StaticSynapse(IConnection):
     @property
     def properties(self):
 
-        properties = {}
-        for k, v in self._nest_properties.items():
-            is_special = k in self._special_attrs
-            properties[str(k)] = self._special_attrs[k](v) if is_special else v
+        if not self._properties:
+            for k, v in self._nest_properties.items():
+                is_special = k in self._special_attrs
+                self._properties[str(k)] = self._special_attrs[k](v) if is_special else v
 
-        return properties
+        return self._properties
 
     @property
     def source(self):
