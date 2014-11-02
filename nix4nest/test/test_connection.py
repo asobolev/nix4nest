@@ -18,6 +18,8 @@ class TestConnection(unittest.TestCase):
         self.file = nix.File.open("/tmp/unittest.h5", nix.FileMode.Overwrite)
         self.block = self.file.create_nest_block("test block", "session")
 
+        self.conn = self.block.create_connection(self.source_id, self.target_id)
+
     def tearDown(self):
         del self.file.blocks[self.block.id]
         self.file.close()
@@ -30,9 +32,10 @@ class TestConnection(unittest.TestCase):
         except ValueError:
             pass
 
-        conn = self.block.create_connection(self.source_id, self.target_id)
-        assert(self.block.metadata.find_sections(lambda x: x.name == conn.name))
+        assert(self.block.metadata.find_sections(lambda x: x.name == self.conn.name))
 
     def test_block_neurons(self):
-        conn = self.block.create_connection(self.source_id, self.target_id)
-        assert(len(self.block.connections()) > 0)
+        assert(len(self.block.connections) > 0)
+
+        conn = self.block.connections[0]
+        assert(self.conn.name == conn.name)

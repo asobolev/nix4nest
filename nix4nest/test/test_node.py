@@ -16,19 +16,20 @@ class TestNode(unittest.TestCase):
         self.file = nix.File.open("/tmp/unittest.h5", nix.FileMode.Overwrite)
         self.block = self.file.create_nest_block("test block", "session")
 
+        self.node = self.block.create_node(self.nest_id)
+
     def tearDown(self):
         del self.file.blocks[self.block.id]
         self.file.close()
 
-    def test_create_from_nest(self):
-        neuron = self.block.create_node(self.nest_id)
-
-        assert(neuron.name == str(self.nest_id))
+    def test_create_node(self):
+        assert(self.node.name == str(self.nest_id))
 
         for k in nest.GetStatus([self.nest_id])[0].keys():
-            assert(neuron.properties.has_property_by_name(str(k)))
+            assert(self.node.properties.has_property_by_name(str(k)))
 
-    def test_block_neurons(self):
-        neuron = self.block.create_node(self.nest_id)
+    def test_block_nodes(self):
+        assert(len(self.block.nodes) > 0)
 
-        assert(len(self.block.neurons()) > 0)
+        node = self.block.nodes[0]
+        assert(self.node.name == node.name)

@@ -14,11 +14,13 @@ class BlockMixin(NixBlock):
         # this injects all members and the doc into nix.core.File
         pass
 
-    def neurons(self):
+    @property
+    def nodes(self):
         sources = self.find_sources(lambda x: x.type == 'neuron')
 
         return [Node(x) for x in sources]
 
+    @property
     def connections(self):
         sources = self.find_sources(lambda x: x.type == 'connection')
 
