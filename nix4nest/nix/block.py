@@ -1,6 +1,8 @@
 from nix import Block as NixBlock
+
 from .inject import Inject
-from nix4nest.nest_api.neuron import Neuron
+from nix4nest.nix.node import Node
+from nix4nest.nest_api.nestfactory import NestFactory
 
 
 class BlockMixin(NixBlock):
@@ -15,4 +17,14 @@ class BlockMixin(NixBlock):
     def neurons(self):
         sources = self.find_sources(lambda x: x.type == 'neuron')
 
-        return [Neuron(x) for x in sources]
+        return [Node(x) for x in sources]
+
+    def create_node(self, nest_id):
+        """
+        Factory method to build an instance from actual NEST global state using
+        a given nest ID.
+
+        :param nest_id: ID of the NEST Node
+        :return:        an instance of <INode> object.
+        """
+        return NestFactory.create_node(self, nest_id)

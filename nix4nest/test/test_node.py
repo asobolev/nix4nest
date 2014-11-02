@@ -6,10 +6,7 @@ import nix
 import nix4nest
 
 
-from nix4nest.nest_api.neuron import Neuron
-
-
-class TestNeuron(unittest.TestCase):
+class TestNode(unittest.TestCase):
 
     def setUp(self):
         nest.ResetKernel()
@@ -24,7 +21,7 @@ class TestNeuron(unittest.TestCase):
         self.file.close()
 
     def test_create_from_nest(self):
-        neuron = Neuron.create_from_nest(self.block, self.nest_id)
+        neuron = self.block.create_node(self.nest_id)
 
         assert(neuron.name == str(self.nest_id))
 
@@ -32,6 +29,6 @@ class TestNeuron(unittest.TestCase):
             assert(neuron.properties.has_property_by_name(str(k)))
 
     def test_block_neurons(self):
-        neuron = Neuron.create_from_nest(self.block, self.nest_id)
+        neuron = self.block.create_node(self.nest_id)
 
         assert(len(self.block.neurons()) > 0)
