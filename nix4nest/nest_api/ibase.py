@@ -3,17 +3,23 @@ from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 
-class INode:
+class IBase:
     """ An Interface for any NEST node to be serialized with NIX. """
 
     __metaclass__ = ABCMeta
 
-    @abstractmethod
-    def __init__(self, nest_id):
-        """
-        Init object from its NEST ID
+    _supported_types = (int, float, str)
 
-        :param nest_id: NEST ID
+    @staticmethod
+    def _clean(value):
+        if not type(value) in IBase._supported_types:
+            return str(value)
+        return value
+
+    @abstractmethod
+    def __init__(self, *args, **kwargs):
+        """
+        Init object from NEST ID(s)
         """
         pass
 
@@ -23,6 +29,16 @@ class INode:
         Object ID / name
 
         :return:    Object ID / name
+        :type:      str
+        """
+        pass
+
+    @abstractproperty
+    def type(self):
+        """
+        Object type
+
+        :return:    Object type as string
         :type:      str
         """
         pass

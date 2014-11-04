@@ -22,7 +22,7 @@ class BlockMixin(NixBlock):
 
     @property
     def connections(self):
-        sources = self.find_sources(lambda x: x.type == 'connection')
+        sources = self.find_sources(lambda x: x.type == 'synapse')
 
         return [Node(x) for x in sources]
 
