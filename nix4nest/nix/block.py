@@ -10,19 +10,22 @@ class BlockMixin(NixBlock):
     This mixin adds special methods to the original NIX::Block
     """
 
+    _node_types = ('neuron', 'stimulator')
+    _conn_types = ('synapse',)
+
     class __metaclass__(Inject, NixBlock.__class__):
         # this injects all members and the doc into nix.core.File
         pass
 
     @property
     def nodes(self):
-        sources = self.find_sources(lambda x: x.type == 'neuron')
+        sources = self.find_sources(lambda x: x.type in self._node_types)
 
         return [Node(x) for x in sources]
 
     @property
     def connections(self):
-        sources = self.find_sources(lambda x: x.type == 'synapse')
+        sources = self.find_sources(lambda x: x.type in self._conn_types)
 
         return [Node(x) for x in sources]
 

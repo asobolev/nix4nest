@@ -12,6 +12,11 @@ class Node(object):
         return str(self._nix_source.name)
 
     @property
+    def type(self):
+        """ Target ID for this connection """
+        return self._nix_source.type
+
+    @property
     def properties(self):
         """ Object NEST properties to be serialized """
         return self._nix_source.metadata
