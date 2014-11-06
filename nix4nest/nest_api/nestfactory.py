@@ -15,7 +15,7 @@ class NestFactory(object):
     """
 
     @staticmethod
-    def create_node(where, nest_id):
+    def dump_node(where, nest_id):
         """
         Factory method to build an instance from actual NEST global state using
         a given nest ID.
@@ -49,7 +49,7 @@ class NestFactory(object):
         return Node(source)
 
     @staticmethod
-    def create_connection(where, source_id, target_id):
+    def dump_connection(where, source_id, target_id):
         """
         Factory method to build an connection instance from actual NEST global
         state using a nest source and target IDs.

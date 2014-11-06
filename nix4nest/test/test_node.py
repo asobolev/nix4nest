@@ -16,7 +16,7 @@ class TestNode(unittest.TestCase):
         self.file = nix.File.open("/tmp/unittest.h5", nix.FileMode.Overwrite)
         self.block = self.file.create_nest_block("test block", "session")
 
-        self.node = self.block.create_node(self.nest_id)
+        self.node = self.block.dump_node(self.nest_id)
 
     def tearDown(self):
         del self.file.blocks[self.block.id]

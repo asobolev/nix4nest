@@ -18,7 +18,7 @@ class TestConnection(unittest.TestCase):
         self.file = nix.File.open("/tmp/unittest.h5", nix.FileMode.Overwrite)
         self.block = self.file.create_nest_block("test block", "session")
 
-        self.conn = self.block.create_connection(self.source_id, self.target_id)
+        self.conn = self.block.dump_connection(self.source_id, self.target_id)
 
     def tearDown(self):
         del self.file.blocks[self.block.id]
@@ -27,7 +27,7 @@ class TestConnection(unittest.TestCase):
     def test_create_connection(self):
         not_connected = nest.Create('iaf_neuron')[0]
         try:
-            self.block.create_connection(self.source_id, not_connected)
+            self.block.dump_connection(self.source_id, not_connected)
             raise AssertionError('No connection should raise error')
         except ValueError:
             pass

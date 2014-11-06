@@ -4,18 +4,23 @@ import nest
 from .ibase import IBase
 
 
-class NestDevice(IBase):
+# TODO rename to Recorder
+
+class NestMultimeter(IBase):
     """
     This class knows how to represent any NEST Device (multimeter, spike
     detector) in python for further serialization.
     """
 
-    def __init__(self, nest_id):
-        super(NestDevice, self).__init__(nest_id)
+    def __init__(self, nest_id, recordable):
+        assert(recordable in nest.GetStatus([nest_id])[0]['record_from'])
+
+        super(NestMultimeter, self).__init__(nest_id)
 
         self._nest_id = nest_id
         self._properties = {}
         self._events = {}
+        self._recordable = recordable
 
     @property
     def name(self):
@@ -39,7 +44,7 @@ class NestDevice(IBase):
     @property
     def _get_data(self):
         if not self._events:
-            self._events = nest.GetStatus([self.id], 'events')[0]
+            self._events = nest.GetStatus([self._nest_id], 'events')[0]
         return self._events
 
     @property
