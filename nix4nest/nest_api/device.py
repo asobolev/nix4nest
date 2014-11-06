@@ -4,17 +4,18 @@ import nest
 from .ibase import IBase
 
 
-class NestNode(IBase):
+class NestDevice(IBase):
     """
-    This class knows how to represent any NEST Node in python for further
-    serialization.
+    This class knows how to represent any NEST Device (multimeter, spike
+    detector) in python for further serialization.
     """
 
     def __init__(self, nest_id):
-        super(NestNode, self).__init__(nest_id)
+        super(NestDevice, self).__init__(nest_id)
 
         self._nest_id = nest_id
         self._properties = {}
+        self._events = {}
 
     @property
     def name(self):
@@ -34,3 +35,17 @@ class NestNode(IBase):
                     type(v) == list else IBase._clean(v)
 
         return self._properties
+
+    @property
+    def _get_data(self):
+        if not self._events:
+            self._events = nest.GetStatus([self.id], 'events')[0]
+        return self._events
+
+    @property
+    def senders(self):
+        return self._get_data['senders']
+
+    @property
+    def times(self):
+        return self._get_data['times']
