@@ -17,11 +17,20 @@ class IBase:
         return value
 
     @abstractmethod
+    def _fetch_properties(self):
+        """
+        Fetch properties from NEST state (usually with GetStatus)
+
+        :return:    object state properties as dict
+        :type:      dict
+        """
+
+    @abstractmethod
     def __init__(self, *args, **kwargs):
         """
         Init object from NEST ID(s)
         """
-        pass
+        self._properties = {}
 
     @abstractproperty
     def name(self):
@@ -43,7 +52,7 @@ class IBase:
         """
         return self.properties['node_type']
 
-    @abstractproperty
+    @property
     def properties(self):
         """
         Object NEST properties to be serialized
@@ -51,4 +60,10 @@ class IBase:
         :return:    dict of object properties
         :type:      dict
         """
-        pass
+        if not self._properties:
+
+            for k, v in self._fetch_properties().items():
+                self._properties[str(k)] = [IBase._clean(x) for x in v] if \
+                    type(v) == list else IBase._clean(v)
+
+        return self._properties

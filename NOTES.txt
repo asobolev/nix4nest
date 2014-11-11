@@ -96,7 +96,7 @@ serializes / deserializes it
     dump_node(nest_id) -> nix::Node
     dump_connection(source_id, target_id) -> nix::Connection
     dump_multimeter(nest_id, recordable) -> nix::Signal
-    dump_spike_detector(nest_id, recordable) -> nix::SpikeTrain
+    dump_spike_detector(nest_id) -> [nix::SpikeTrain, ...]
 
 
 

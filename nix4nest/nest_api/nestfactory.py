@@ -2,8 +2,9 @@ import nix
 
 from nix4nest.nix.node import Node
 from nix4nest.nix.connection import Connection
-from .node import NestNode
-from .connection import NestConnection
+from nix4nest.nest_api.models.node import NestNode
+from nix4nest.nest_api.models.connection import NestConnection
+from nix4nest.nest_api.models.multimeter import NestMultimeter
 
 
 class NestFactory(object):
@@ -84,3 +85,31 @@ class NestFactory(object):
             source.metadata.create_property(k, value)
 
         return Connection(source)
+
+    @staticmethod
+    def dump_multimeter(where, nest_id, recordable):
+        """
+        Factory method to dump recorded signals from a Multimeter with a given
+        NEST ID.
+
+        :param where:       nix::Block where to create a signal
+        :param recordable:  name of the recordable (like 'V_m')
+        :return:            an instance of <AnalogSignal> object.
+        """
+        assert(type(nest_id) == int)
+
+        mm = NestMultimeter(nest_id, recordable)
+
+        name = "signal_from_%d" % nest_id
+        iargs = [name, 'analogsignal', nix.DataType.Float, (len(mm.data),)]
+        signal = where.create_data_array(*iargs)
+
+        signal.data.append(mm.data)
+        signal.unit = 'mV'
+        signal.append_range_dimension(mm.times)
+        signal.dimensions[0].unit = 'ms'
+
+        neurons = where.find_sources(lambda x: int(x.name) in mm.senders)
+        map(signal.sources.append, neurons)
+
+        #return Signal(signal)
