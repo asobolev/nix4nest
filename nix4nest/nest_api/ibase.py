@@ -33,7 +33,7 @@ class IBase:
         """
         pass
 
-    @abstractproperty
+    @property
     def type(self):
         """
         Object type
@@ -41,7 +41,7 @@ class IBase:
         :return:    Object type as string
         :type:      str
         """
-        pass
+        return self.properties['node_type']
 
     @abstractproperty
     def properties(self):

@@ -31,10 +31,6 @@ class NestConnection(IBase):
         return "%s_%s" % (str(self.source_id), str(self.target_id))
 
     @property
-    def type(self):
-        return self.properties['node_type']
-
-    @property
     def properties(self):
         if not self._properties:
 

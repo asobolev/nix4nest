@@ -21,10 +21,6 @@ class NestNode(IBase):
         return str(self._nest_id)
 
     @property
-    def type(self):
-        return self.properties['node_type']
-
-    @property
     def properties(self):
         if not self._properties:
             nest_properties = dict(nest.GetStatus([self._nest_id])[0])
