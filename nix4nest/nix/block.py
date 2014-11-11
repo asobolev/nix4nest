@@ -2,6 +2,8 @@ from nix import Block as NixBlock
 
 from .inject import Inject
 from nix4nest.nix.node import Node
+from nix4nest.nix.connection import Connection
+from nix4nest.nix.signal import Signal
 from nix4nest.nest_api.nestfactory import NestFactory
 
 
@@ -27,7 +29,13 @@ class BlockMixin(NixBlock):
     def connections(self):
         sources = self.find_sources(lambda x: x.type in self._conn_types)
 
-        return [Node(x) for x in sources]
+        return [Connection(x) for x in sources]
+
+    @property
+    def signals(self):
+        signals = filter(lambda x: x.type == 'signal', self.data_arrays)
+
+        return [Signal(x) for x in signals]
 
     def dump_node(self, nest_id):
         """
@@ -49,3 +57,14 @@ class BlockMixin(NixBlock):
         :return:            an instance of <IConnection> object.
         """
         return NestFactory.dump_connection(self, source_id, target_id)
+
+    def dump_multimeter(self, nest_id, recordable):
+        """
+        Factory method to build an instance from actual NEST global state using
+        a given nest ID.
+
+        :param nest_id:     NEST ID of the multimeter
+        :param recordable:  name of the recordable (like 'V_m')
+        :return:            an instance of <IConnection> object.
+        """
+        return NestFactory.dump_multimeter(self, nest_id, recordable)

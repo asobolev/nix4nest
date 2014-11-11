@@ -19,8 +19,8 @@ class FileMixin(NixFile):
             block.metadata = self.create_section(block.name, 'root')
 
         # ensure metadata has 'sources' subsection
-        if not block.metadata.find_sections(lambda x: x.name == 'neurons'):
-            block.metadata.create_section('neurons', 'group')
+        if not block.metadata.find_sections(lambda x: x.name == 'nodes'):
+            block.metadata.create_section('nodes', 'group')
 
         # ensure metadata has 'connections' subsection
         if not block.metadata.find_sections(lambda x: x.name == 'connections'):

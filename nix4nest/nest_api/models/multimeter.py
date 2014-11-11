@@ -20,3 +20,7 @@ class NestMultimeter(IRecorder):
     @property
     def data(self):
         return self._get_data()[self._recordable]
+
+    @property
+    def unit(self):
+        return 'mV'  # TODO try to find the way to get units
