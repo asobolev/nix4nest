@@ -17,6 +17,5 @@ class NestMultimeter(IRecorder):
         super(NestMultimeter, self).__init__(nest_id)
         self._recordable = recordable
 
-    @property
-    def data(self):
-        return self._get_data[self._recordable]
+    def get_data(self, update=False):
+        return self._get_data(update)[self._recordable]
