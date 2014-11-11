@@ -26,12 +26,15 @@ class TestNode(unittest.TestCase):
             assert(k in self.mm.properties)
 
     def test_data(self):
-        assert(len(self.mm.get_data()) == 0)
+        assert(len(self.mm.data) == 0)
 
         nest.Simulate(50)
 
-        assert(len(self.mm.get_data()) == 0)
-        assert(len(self.mm.get_data(update=True)) == 49)
+        assert(len(self.mm.data) == 0)
+
+        self.mm.refresh()
+
+        assert(len(self.mm.data) == 49)
 
         assert(self.neuron_id in self.mm.senders)
         assert((self.mm.senders == self.neuron_id).all())

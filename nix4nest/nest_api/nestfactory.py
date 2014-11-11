@@ -101,10 +101,10 @@ class NestFactory(object):
         mm = NestMultimeter(nest_id, recordable)
 
         name = "signal_from_%d" % nest_id
-        iargs = [name, 'analogsignal', nix.DataType.Float, (len(mm.data),)]
+        iargs = [name, 'analogsignal', nix.DataType.Float, (len(mm.get_data()),)]
         signal = where.create_data_array(*iargs)
 
-        signal.data.append(mm.data)
+        signal.data.append(mm.get_data())
         signal.unit = 'mV'
         signal.append_range_dimension(mm.times)
         signal.dimensions[0].unit = 'ms'

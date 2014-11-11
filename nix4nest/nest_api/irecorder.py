@@ -21,14 +21,17 @@ class IRecorder(IBase):
     def _fetch_properties(self):
         return dict(nest.GetStatus([self._nest_id])[0])
 
+    def _get_data(self):
+        if not self._events:
+            self.refresh()
+        return self._events
+
+    def refresh(self):
+        self._events = nest.GetStatus([self._nest_id], 'events')[0]
+
     @property
     def name(self):
         return str(self._nest_id)
-
-    def _get_data(self, update=False):
-        if not self._events or update:
-            self._events = nest.GetStatus([self._nest_id], 'events')[0]
-        return self._events
 
     @property
     def senders(self):
