@@ -15,22 +15,25 @@ class NestFactory(object):
     """
 
     @staticmethod
-    def dump_node(where, nest_id):
+    def dump_node(where, nest_id, name=None):
         """
         Factory method to build an instance from actual NEST global state using
         a given nest ID.
 
         :param where:   nix::Block where to create a Node
         :param nest_id: ID of the NEST Node
+        :param name:    save Node under a given name (to avoid duplicates)
         :return:        an instance of <INode> object.
         """
         assert(type(nest_id) == int)
 
         node = NestNode(nest_id)
-        return Node.create_node(where, node.name, node.type, node.properties)
+        final_name = name or node.name
+
+        return Node.create_node(where, final_name, node.type, node.properties)
 
     @staticmethod
-    def dump_connection(where, source_id, target_id):
+    def dump_connection(where, source_id, target_id, name=None):
         """
         Factory method to build an connection instance from actual NEST global
         state using a nest source and target IDs.
@@ -38,16 +41,19 @@ class NestFactory(object):
         :param where:       nix::Block where to create a Node
         :param source_id:   ID of the source NEST Node
         :param target_id:   ID of the target NEST Node
+        :param name:        save Connection under a given name (to avoid duplicates)
         :return:            an instance of <IConnection> object.
         """
         assert(type(source_id) == int)
         assert(type(target_id) == int)
 
         cn = NestConnection(source_id, target_id)
-        return Connection.create_connection(where, cn.name, cn.type, cn.properties)
+        final_name = name or cn.name
+
+        return Connection.create_connection(where, final_name, cn.type, cn.properties)
 
     @staticmethod
-    def dump_multimeter(where, nest_id, recordable):
+    def dump_multimeter(where, nest_id, recordable, name=None):
         """
         Factory method to dump recorded signals from a Multimeter with a given
         NEST ID.
@@ -55,17 +61,19 @@ class NestFactory(object):
         :param where:       nix::Block where to create a signal
         :param nest_id:     NEST ID of the multimeter
         :param recordable:  name of the recordable (like 'V_m')
+        :param name:        save Signal under a given name (to avoid duplicates)
         :return:            an instance of <AnalogSignal> object.
         """
         assert(type(nest_id) == int)
 
         mm = NestMultimeter(nest_id, recordable)
+        final_name = name or mm.name
 
-        signal = Signal.create_signal(where, mm.name, mm.data, mm.unit, mm.interval)
+        signal = Signal.create_signal(where, final_name, mm.data, mm.unit, mm.interval)
 
-        if mm.senders:
+        if len(mm.senders) > 0:
             sources = where.find_sources(lambda x: x.name == str(mm.senders[0]))
             if sources:
-                signal.source = sources[0]
+                signal.source = Node(sources[0])
 
         return signal

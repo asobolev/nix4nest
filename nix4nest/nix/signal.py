@@ -1,12 +1,13 @@
 from __future__ import absolute_import
 
-import nix
+from .node import Node
 
 
 class Signal(object):
 
     def __init__(self, nix_data_array):
         self._nix_data_array = nix_data_array
+        self._source = None
 
     @property
     def name(self):
@@ -36,18 +37,19 @@ class Signal(object):
 
     @property
     def source(self):
-        if self._nix_data_array.sources:
-            return self._nix_data_array.sources[0]
-        return None
+        if not self._source and self._nix_data_array.sources:
+            self._source = Node(self._nix_data_array.sources[0])
+        return self._source
 
     @source.setter
-    def source(self, source):
+    def source(self, node):
         """
-        :param source:      nix::Source
+        :param node:      nix4nest::Node
         """
         if self.source:
-            self._nix_data_array.sources.remove(self.source)
-        self._nix_data_array.sources.append(source)
+            self._nix_data_array.sources.remove(self.source._nix_source)
+        self._nix_data_array.sources.append(node._nix_source)
+        self._source = Node(self._nix_data_array.sources[0])
 
     @staticmethod
     def create_signal(where, name, values, unit, interval, s_unit='ms'):

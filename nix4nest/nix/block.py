@@ -37,7 +37,7 @@ class BlockMixin(NixBlock):
 
         return [Signal(x) for x in signals]
 
-    def dump_node(self, nest_id):
+    def dump_node(self, nest_id, name=None):
         """
         Factory method to build an instance from actual NEST global state using
         a given nest ID.
@@ -45,9 +45,9 @@ class BlockMixin(NixBlock):
         :param nest_id: ID of the NEST Node
         :return:        an instance of <INode> object.
         """
-        return NestFactory.dump_node(self, nest_id)
+        return NestFactory.dump_node(self, nest_id, name)
 
-    def dump_connection(self, source_id, target_id):
+    def dump_connection(self, source_id, target_id, name=None):
         """
         Factory method to build an instance from actual NEST global state using
         a given nest ID.
@@ -56,9 +56,9 @@ class BlockMixin(NixBlock):
         :param target_id:   ID of the NEST Node
         :return:            an instance of <IConnection> object.
         """
-        return NestFactory.dump_connection(self, source_id, target_id)
+        return NestFactory.dump_connection(self, source_id, target_id, name)
 
-    def dump_multimeter(self, nest_id, recordable):
+    def dump_multimeter(self, nest_id, recordable, name=None):
         """
         Factory method to build an instance from actual NEST global state using
         a given nest ID.
@@ -67,4 +67,4 @@ class BlockMixin(NixBlock):
         :param recordable:  name of the recordable (like 'V_m')
         :return:            an instance of <IConnection> object.
         """
-        return NestFactory.dump_multimeter(self, nest_id, recordable)
+        return NestFactory.dump_multimeter(self, nest_id, recordable, name)

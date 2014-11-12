@@ -7,6 +7,7 @@ import nix
 import nix4nest
 
 from nix4nest.nix.signal import Signal
+from nix4nest.nix.node import Node
 
 
 class TestSignal(unittest.TestCase):
@@ -15,7 +16,7 @@ class TestSignal(unittest.TestCase):
         self.file = nix.File.open("/tmp/unittest.h5", nix.FileMode.Overwrite)
         self.block = self.file.create_nest_block("test block", "session")
 
-        self.source = self.block.create_source('foo', 'neuron')
+        self.source = Node(self.block.create_source('foo', 'neuron'))
 
     def tearDown(self):
         del self.file.blocks[self.block.id]
@@ -34,9 +35,9 @@ class TestSignal(unittest.TestCase):
 
         signal.source = self.source
 
-        assert(self.source == signal.source)
+        assert(self.source.name == signal.source.name)
         assert(signal.data.size == length)
-        assert(signal.dimensions[0].interval == 1.0)
+        assert(signal.dimensions[0].sampling_interval == 1.0)
 
         assert(len(self.block.signals) > 0)
         test_sig = self.block.signals[0]
@@ -66,11 +67,11 @@ class TestSignal(unittest.TestCase):
         assert(empty.data.size == 0)
         assert(empty.dimensions[0].sampling_interval == 1.0)
 
-        self.block.dump_node(neuron_id)
+        neuron = self.block.dump_node(neuron_id)
         nest.Simulate(50)
 
-        signal = self.block.dump_multimeter(mm_id, 'V_m')
+        signal = self.block.dump_multimeter(mm_id, 'V_m', 'new_mm')
 
-        assert(self.source == signal.source)
+        assert(neuron.name == signal.source.name)
         assert(signal.data.size == 49)
         assert(signal.dimensions[0].sampling_interval == 1.0)
