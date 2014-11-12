@@ -61,7 +61,7 @@ class NestFactory(object):
 
         mm = NestMultimeter(nest_id, recordable)
 
-        signal = Signal.create_signal(where, mm.name, mm.times, mm.data, mm.unit)
+        signal = Signal.create_signal(where, mm.name, mm.data, mm.unit, mm.interval)
 
         if mm.senders:
             sources = where.find_sources(lambda x: x.name == str(mm.senders[0]))

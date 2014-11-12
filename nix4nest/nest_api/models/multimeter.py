@@ -18,6 +18,10 @@ class NestMultimeter(IRecorder):
         self._recordable = recordable
 
     @property
+    def interval(self):
+        return self.properties['interval']
+
+    @property
     def data(self):
         return self._get_data()[self._recordable]
 

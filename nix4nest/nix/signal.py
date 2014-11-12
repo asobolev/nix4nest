@@ -50,26 +50,27 @@ class Signal(object):
         self._nix_data_array.sources.append(source)
 
     @staticmethod
-    def create_signal(where, name, times, values, unit):
+    def create_signal(where, name, values, unit, interval, s_unit='ms'):
         """
         Creates a Signal object representing recorded signal (by Multimeter).
 
         :param name:        simply name of the signal (str)
         :param where:       block where to create Node (nix::Block)
-        :param times:       numpy array with times (assuming units 'ms')
         :param values:      numpy array with values
         :param unit:        value units (str)
+        :param interval:    sampling interval
+        :param s_unit:      units of sampling (str)
         :return:            instance of Signal
         """
         assert(where.metadata is not None)
-        assert(len(times) == len(values))
         assert(hasattr(values, 'dtype'))
 
         signal = where.create_data_array(name, 'signal', values.dtype, (0,))
 
         signal.data.append(values)
         signal.unit = unit
-        signal.append_range_dimension(times)
-        signal.dimensions[0].unit = 'ms'
+
+        signal.append_sampled_dimension(interval)
+        signal.dimensions[0].unit = s_unit
 
         return Signal(signal)

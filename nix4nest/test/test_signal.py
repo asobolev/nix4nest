@@ -26,11 +26,9 @@ class TestSignal(unittest.TestCase):
 
     def test_create(self):
         length = 10
-
-        times = [x + 1.0 for x in range(length)]
         values = np.random.rand(length)
 
-        signal = Signal.create_signal(self.block, 'foo', times, values, 'mV')
+        signal = Signal.create_signal(self.block, 'foo', values, 'mV', 1.0)
 
         assert(not signal.source)
 
@@ -38,6 +36,7 @@ class TestSignal(unittest.TestCase):
 
         assert(self.source == signal.source)
         assert(signal.data.size == length)
+        assert(signal.dimensions[0].interval == 1.0)
 
         assert(len(self.block.signals) > 0)
         test_sig = self.block.signals[0]
@@ -61,5 +60,17 @@ class TestSignal(unittest.TestCase):
         nest.Connect([mm_id], [neuron_id])
 
         # testing
-        signal = self.block.dump_multimeter(mm_id, 'V_m')  # empty multimeter
+        empty = self.block.dump_multimeter(mm_id, 'V_m')  # empty multimeter
 
+        assert(not empty.source)
+        assert(empty.data.size == 0)
+        assert(empty.dimensions[0].sampling_interval == 1.0)
+
+        self.block.dump_node(neuron_id)
+        nest.Simulate(50)
+
+        signal = self.block.dump_multimeter(mm_id, 'V_m')
+
+        assert(self.source == signal.source)
+        assert(signal.data.size == 49)
+        assert(signal.dimensions[0].sampling_interval == 1.0)
