@@ -60,6 +60,12 @@ class NestFactory(object):
         assert(type(nest_id) == int)
 
         mm = NestMultimeter(nest_id, recordable)
-        assert(len(mm.senders) == 1)
 
-        return Signal.create_signal(where, mm.senders[0], mm.times, mm.data, mm.unit)
+        signal = Signal.create_signal(where, mm.name, mm.times, mm.data, mm.unit)
+
+        if mm.senders:
+            sources = where.find_sources(lambda x: x.name == str(mm.senders[0]))
+            if sources:
+                signal.source = sources[0]
+
+        return signal

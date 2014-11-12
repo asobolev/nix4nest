@@ -36,15 +36,26 @@ class Signal(object):
 
     @property
     def source(self):
-        return self._nix_data_array.sources[0].name
+        if self._nix_data_array.sources:
+            return self._nix_data_array.sources[0]
+        return None
+
+    @source.setter
+    def source(self, source):
+        """
+        :param source:      nix::Source
+        """
+        if self.source:
+            self._nix_data_array.sources.remove(self.source)
+        self._nix_data_array.sources.append(source)
 
     @staticmethod
-    def create_signal(where, source_name, times, values, unit):
+    def create_signal(where, name, times, values, unit):
         """
         Creates a Signal object representing recorded signal (by Multimeter).
 
+        :param name:        simply name of the signal (str)
         :param where:       block where to create Node (nix::Block)
-        :param source_name: name of the source node (str)
         :param times:       numpy array with times (assuming units 'ms')
         :param values:      numpy array with values
         :param unit:        value units (str)
@@ -52,19 +63,13 @@ class Signal(object):
         """
         assert(where.metadata is not None)
         assert(len(times) == len(values))
+        assert(hasattr(values, 'dtype'))
 
-        name = "signal_from_%d" % source_name
-        iargs = [name, 'signal', nix.DataType.Float, (len(values),)]
-        signal = where.create_data_array(*iargs)
+        signal = where.create_data_array(name, 'signal', values.dtype, (0,))
 
         signal.data.append(values)
         signal.unit = unit
         signal.append_range_dimension(times)
         signal.dimensions[0].unit = 'ms'
-
-        neurons = where.find_sources(lambda x: x.name == source_name)
-
-        assert(len(neurons) == 1)
-        map(signal.sources.append, neurons)
 
         return Signal(signal)
