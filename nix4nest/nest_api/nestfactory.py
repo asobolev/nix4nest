@@ -1,9 +1,12 @@
 from nix4nest.nix.node import Node
 from nix4nest.nix.connection import Connection
 from nix4nest.nix.signal import Signal
+from nix4nest.nix.spiketrain import SpikeTrain
 from nix4nest.nest_api.models.node import NestNode
 from nix4nest.nest_api.models.connection import NestConnection
 from nix4nest.nest_api.models.multimeter import NestMultimeter
+from nix4nest.nest_api.models.spike_detector import NestSpikeDetector
+# TODO replace imports by *
 
 
 class NestFactory(object):
@@ -77,3 +80,33 @@ class NestFactory(object):
                 signal.source = Node(sources[0])
 
         return signal
+
+    @staticmethod
+    def dump_spike_detector(where, nest_id, prefix=None):
+        """
+        Factory method to dump recorded spike times from a Spike Detector with a
+        given NEST ID.
+
+        :param where:       nix::Block where to create a signal
+        :param nest_id:     NEST ID of the spike detector
+        :param prefix:      save spikes with a given prefix (to avoid duplicates)
+        :return:            list of <SpikeTrain> instances.
+        """
+        assert(type(nest_id) == int)
+
+        sd = NestSpikeDetector(nest_id)
+
+        spiketrains = []
+        for sender in sd.senders_list:
+            times = sd.get_spike_times(sender)
+            final_name = prefix + str(sender) if prefix else str(sender)
+
+            st = SpikeTrain.create_spiketrain(where, final_name, times)
+
+            sources = where.find_sources(lambda x: x.name == str(sender))
+            if sources:
+                st.source = Node(sources[0])
+
+            spiketrains.append(st)
+
+        return spiketrains

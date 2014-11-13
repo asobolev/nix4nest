@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from .node import Node
 
 
-class Signal(object):
+class SpikeTrain(object):
 
     def __init__(self, nix_data_array):
         self._nix_data_array = nix_data_array
@@ -32,10 +32,6 @@ class Signal(object):
         return self._nix_data_array.unit
 
     @property
-    def sampling(self):
-        return self._nix_data_array.dimensions[0]
-
-    @property
     def source(self):
         if not self._source and self._nix_data_array.sources:
             self._source = Node(self._nix_data_array.sources[0])
@@ -52,27 +48,23 @@ class Signal(object):
         self._source = Node(self._nix_data_array.sources[0])
 
     @staticmethod
-    def create_signal(where, name, values, unit, interval, s_unit='ms'):
+    def create_spiketrain(where, name, times, unit='ms'):
         """
-        Creates a Signal object representing recorded signal (by Multimeter).
+        Creates a Spiketrain object representing recorded spike times
+         (by Spike Detector).
 
-        :param name:        simply name of the signal (str)
+        :param name:        simply name of the spiketrain (str)
         :param where:       block where to create Node (nix::Block)
-        :param values:      numpy array with values
+        :param times:       numpy array with spike times
         :param unit:        value units (str)
-        :param interval:    sampling interval
-        :param s_unit:      units of sampling (str)
-        :return:            instance of Signal
+        :return:            instance of Spiketrain
         """
-        assert(where.metadata is not None)
-        assert(hasattr(values, 'dtype'))
+        assert(hasattr(times, 'dtype'))
 
-        signal = where.create_data_array(name, 'signal', values.dtype, (0,))
+        st = where.create_data_array(name, 'spiketrain', times.dtype, (0,))
 
-        signal.data.append(values)
-        signal.unit = unit
+        st.data.append(times)
+        st.unit = unit
+        st.append_set_dimension()
 
-        signal.append_sampled_dimension(interval)
-        signal.dimensions[0].unit = s_unit
-
-        return Signal(signal)
+        return SpikeTrain(st)

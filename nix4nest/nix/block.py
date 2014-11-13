@@ -4,6 +4,7 @@ from .inject import Inject
 from nix4nest.nix.node import Node
 from nix4nest.nix.connection import Connection
 from nix4nest.nix.signal import Signal
+from nix4nest.nix.spiketrain import SpikeTrain
 from nix4nest.nest_api.nestfactory import NestFactory
 
 
@@ -37,6 +38,12 @@ class BlockMixin(NixBlock):
 
         return [Signal(x) for x in signals]
 
+    @property
+    def spiketrains(self):
+        sts = filter(lambda x: x.type == 'spiketrain', self.data_arrays)
+
+        return [SpikeTrain(x) for x in sts]
+
     def dump_node(self, nest_id, name=None):
         """
         Factory method to build an instance from actual NEST global state using
@@ -65,6 +72,17 @@ class BlockMixin(NixBlock):
 
         :param nest_id:     NEST ID of the multimeter
         :param recordable:  name of the recordable (like 'V_m')
-        :return:            an instance of <IConnection> object.
+        :return:            an instance of <Signal> object.
         """
         return NestFactory.dump_multimeter(self, nest_id, recordable, name)
+
+    def dump_spike_detector(self, nest_id, prefix=None):
+        """
+        Factory method to build an instance from actual NEST global state using
+        a given nest ID.
+
+        :param nest_id:     NEST ID of the spike detector
+        :param prefix:      save spikes with a given prefix (to avoid duplicates)
+        :return:            list of <Spiketrain> instances
+        """
+        return NestFactory.dump_spike_detector(self, nest_id, prefix)

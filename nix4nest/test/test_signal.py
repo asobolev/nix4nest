@@ -37,7 +37,7 @@ class TestSignal(unittest.TestCase):
 
         assert(self.source.name == signal.source.name)
         assert(signal.data.size == length)
-        assert(signal.dimensions[0].sampling_interval == 1.0)
+        assert(signal.sampling.sampling_interval == 1.0)
 
         assert(len(self.block.signals) > 0)
         test_sig = self.block.signals[0]
@@ -65,7 +65,7 @@ class TestSignal(unittest.TestCase):
 
         assert(not empty.source)
         assert(empty.data.size == 0)
-        assert(empty.dimensions[0].sampling_interval == 1.0)
+        assert(empty.sampling.sampling_interval == 1.0)
 
         neuron = self.block.dump_node(neuron_id)
         nest.Simulate(50)
@@ -74,4 +74,4 @@ class TestSignal(unittest.TestCase):
 
         assert(neuron.name == signal.source.name)
         assert(signal.data.size == 49)
-        assert(signal.dimensions[0].sampling_interval == 1.0)
+        assert(signal.sampling.sampling_interval == 1.0)
