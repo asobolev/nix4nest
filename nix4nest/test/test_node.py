@@ -26,7 +26,7 @@ class TestNode(unittest.TestCase):
         assert(self.node.name == str(self.nest_id))
 
         for k in nest.GetStatus([self.nest_id])[0].keys():
-            assert(self.node.properties.has_property_by_name(str(k)))
+            assert(str(k) in self.node.properties)
 
     def test_block_nodes(self):
         assert(len(self.block.nodes) > 0)

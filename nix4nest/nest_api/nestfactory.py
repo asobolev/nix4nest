@@ -75,7 +75,12 @@ class NestFactory(object):
         signal = Signal.create_signal(where, final_name, mm.data, mm.unit, mm.interval)
 
         if len(mm.senders) > 0:
-            sources = where.find_sources(lambda x: x.name == str(mm.senders[0]))
+
+            c1 = lambda x: bool(x.metadata)
+            c2 = lambda x: 'global_id' in x.metadata
+            c3 = lambda x: x.metadata['global_id'].values[0].value == mm.senders[0]
+
+            sources = where.find_sources(lambda x: c1(x) and c2(x) and c3(x))
             if sources:
                 signal.source = Node(sources[0])
 
@@ -103,7 +108,11 @@ class NestFactory(object):
 
             st = SpikeTrain.create_spiketrain(where, final_name, times)
 
-            sources = where.find_sources(lambda x: x.name == str(sender))
+            c1 = lambda x: bool(x.metadata)
+            c2 = lambda x: 'global_id' in x.metadata
+            c3 = lambda x: x.metadata['global_id'].values[0].value == sender
+
+            sources = where.find_sources(lambda x: c1(x) and c2(x) and c3(x))
             if sources:
                 st.source = Node(sources[0])
 

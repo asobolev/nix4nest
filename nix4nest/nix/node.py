@@ -1,27 +1,9 @@
 from __future__ import absolute_import
-
+from .nixbase import NixBase
 import nix
 
 
-class Node(object):
-
-    def __init__(self, nix_source):
-        self._nix_source = nix_source
-
-    @property
-    def name(self):
-        """ Object name / ID """
-        return str(self._nix_source.name)
-
-    @property
-    def type(self):
-        """ Target ID for this connection """
-        return self._nix_source.type
-
-    @property
-    def properties(self):
-        """ Object NEST properties to be serialized """
-        return self._nix_source.metadata
+class Node(NixBase):
 
     @staticmethod
     def create_node(where, name, obj_type, params):

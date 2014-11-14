@@ -1,44 +1,34 @@
 from __future__ import absolute_import
-
+from .nixbase import NixBase
 from .node import Node
 
 
-class Signal(object):
+class Signal(NixBase):
 
-    def __init__(self, nix_data_array):
-        self._nix_data_array = nix_data_array
+    def __init__(self, nix_object):
+        super(Signal, self).__init__(nix_object)
         self._source = None
 
     @property
-    def name(self):
-        """ Object name / ID """
-        return str(self._nix_data_array.name)
-
-    @property
-    def type(self):
-        """ Target ID for this connection """
-        return self._nix_data_array.type
-
-    @property
     def data(self):
-        return self._nix_data_array.data
+        return self._nix_object.data
 
     @property
     def data_type(self):
-        return self._nix_data_array.data_type
+        return self._nix_object.data_type
 
     @property
     def unit(self):
-        return self._nix_data_array.unit
+        return self._nix_object.unit
 
     @property
     def sampling(self):
-        return self._nix_data_array.dimensions[0]
+        return self._nix_object.dimensions[0]
 
     @property
     def source(self):
-        if not self._source and self._nix_data_array.sources:
-            self._source = Node(self._nix_data_array.sources[0])
+        if not self._source and self._nix_object.sources:
+            self._source = Node(self._nix_object.sources[0])
         return self._source
 
     @source.setter
@@ -47,9 +37,9 @@ class Signal(object):
         :param node:      nix4nest::Node
         """
         if self.source:
-            self._nix_data_array.sources.remove(self.source._nix_source)
-        self._nix_data_array.sources.append(node._nix_source)
-        self._source = Node(self._nix_data_array.sources[0])
+            self._nix_object.sources.remove(self.source._nix_object)
+        self._nix_object.sources.append(node._nix_object)
+        self._source = Node(self._nix_object.sources[0])
 
     @staticmethod
     def create_signal(where, name, values, unit, interval, s_unit='ms'):

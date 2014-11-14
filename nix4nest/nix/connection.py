@@ -1,27 +1,9 @@
 from __future__ import absolute_import
-
+from .nixbase import NixBase
 import nix
 
 
-class Connection(object):
-
-    def __init__(self, nix_source):
-        self._nix_source = nix_source
-
-    @property
-    def name(self):
-        """ Object name / ID """
-        return str(self._nix_source.name)
-
-    @property
-    def type(self):
-        """ Target ID for this connection """
-        return self._nix_source.type
-
-    @property
-    def properties(self):
-        """ Object NEST properties """
-        return self._nix_source.metadata
+class Connection(NixBase):
 
     @property
     def source(self):
