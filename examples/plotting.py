@@ -6,9 +6,9 @@ from matplotlib.pyplot import figure
 def multiple_time_series(events, labels, times):
     """
     Creates a plot of multiple time series given.
-    :param events: 2D (numpy) array with actual event values
+    :param events:  2D (numpy) array with actual event values
     :param labels:  list (len = events.ndim[0]) with label for every time serie
-    :param times: 1D (numpy) array with times
+    :param times:   1D (numpy) array with times
     """
     fig = figure(figsize=(8, 6))
 
