@@ -5,6 +5,7 @@ from nix4nest.nix.node import Node
 from nix4nest.nix.connection import Connection
 from nix4nest.nix.signal import Signal
 from nix4nest.nix.spiketrain import SpikeTrain
+from nix4nest.nix.weightstack import WeightStack
 from nix4nest.nest_api.nestfactory import NestFactory
 
 
@@ -45,6 +46,12 @@ class BlockMixin(NixBlock):
         sts = filter(lambda x: x.type in self._disc_types, self.data_arrays)
 
         return [SpikeTrain(x) for x in sts]
+
+    @property
+    def weightstacks(self):
+        wss = filter(lambda x: x.type == 'weightstack', self.data_arrays)
+
+        return [WeightStack(x) for x in wss]
 
     def dump_node(self, nest_id, name=None):
         """
@@ -88,3 +95,14 @@ class BlockMixin(NixBlock):
         :return:            list of <Spiketrain> instances
         """
         return NestFactory.dump_spike_detector(self, nest_id, prefix)
+
+    def capture_weights(self, sources, targets):
+        """
+        Captures actual connection weights (all-to-all) between given <sources>
+        and <targets>
+
+        :param sources:     NEST IDs of source nodes
+        :param targets:     NEST IDs of target nodes
+        :return:            2D snapshot with actual weights
+        """
+        return NestFactory.capture_weights(sources, targets)

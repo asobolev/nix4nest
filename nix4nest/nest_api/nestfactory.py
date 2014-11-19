@@ -1,3 +1,5 @@
+import numpy as np
+
 from nix4nest.nix.node import Node
 from nix4nest.nix.connection import Connection
 from nix4nest.nix.signal import Signal
@@ -119,3 +121,21 @@ class NestFactory(object):
             spiketrains.append(st)
 
         return spiketrains
+
+    @staticmethod
+    def capture_weights(sources, targets):
+        """
+        Captures actual connection weights (all-to-all) between given <sources>
+        and <targets>
+
+        :param sources:     NEST IDs of source nodes
+        :param targets:     NEST IDs of target nodes
+        :return:            2D snapshot with actual weights
+        """
+        spider = np.zeros([len(sources), len(targets)])
+        for i, source in enumerate(sorted(sources)):
+            for j, target in enumerate(sorted(targets)):
+                conn = NestConnection(source, target)
+                spider[i][j] = conn.properties['weight']
+
+        return spider
