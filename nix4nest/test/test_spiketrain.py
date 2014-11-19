@@ -23,7 +23,15 @@ class TestSpikeTrain(unittest.TestCase):
         self.file.close()
 
     def test_append(self):
-        pass
+        length = 10
+        times = np.empty((0,))
+        st = SpikeTrain.create_spiketrain(self.block, 'foo', times)
+
+        st.data.append(np.random.rand(length))
+        assert(st.data.size == length)
+
+        st.data.append(np.random.rand(length))
+        assert(st.data.size == 2 * length)
 
     def test_create(self):
         length = 10

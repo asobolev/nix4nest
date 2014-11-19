@@ -23,7 +23,15 @@ class TestSignal(unittest.TestCase):
         self.file.close()
 
     def test_append(self):
-        pass
+        length = 10
+        values = np.empty((0,))
+        signal = Signal.create_signal(self.block, 'foo', values, 'mV', 1.0)
+
+        signal.data.append(np.random.rand(length))
+        assert(signal.data.size == length)
+
+        signal.data.append(np.random.rand(length))
+        assert(signal.data.size == 2 * length)
 
     def test_create(self):
         length = 10
