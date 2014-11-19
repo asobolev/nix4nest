@@ -15,6 +15,8 @@ class BlockMixin(NixBlock):
 
     _node_types = ('neuron', 'stimulator')
     _conn_types = ('synapse',)
+    _anal_types = ('signal',)
+    _disc_types = ('spiketrain',)
 
     class __metaclass__(Inject, NixBlock.__class__):
         # this injects all members and the doc into nix.core.File
@@ -34,13 +36,13 @@ class BlockMixin(NixBlock):
 
     @property
     def signals(self):
-        signals = filter(lambda x: x.type == 'signal', self.data_arrays)
+        signals = filter(lambda x: x.type in self._anal_types, self.data_arrays)
 
         return [Signal(x) for x in signals]
 
     @property
     def spiketrains(self):
-        sts = filter(lambda x: x.type == 'spiketrain', self.data_arrays)
+        sts = filter(lambda x: x.type in self._disc_types, self.data_arrays)
 
         return [SpikeTrain(x) for x in sts]
 
