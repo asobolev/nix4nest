@@ -1,6 +1,7 @@
 import numpy as np
 
 from matplotlib.pyplot import figure
+import matplotlib.pyplot as plt
 
 
 def multiple_time_series(events, labels, times):
@@ -30,5 +31,42 @@ def multiple_time_series(events, labels, times):
         ax.set_ylabel(labels[i])
 
         ax.plot(times, signal)
+
+    return fig
+
+
+def weights_multiple(weights):
+    """
+    Creates a figure to plot several weight matrixes.
+
+    :param weights: list of numpy 2D arrays with float values
+    """
+    fig = figure(figsize=(11, 7))
+    fig.canvas.set_window_title('Weights input - map layers')
+
+    to_plot = np.array(weights)
+    total = len(to_plot)
+    g_min = to_plot.min() # needed for colorbar
+    g_max = to_plot.max()
+    delta = g_max - g_min
+
+    for i, matrix in enumerate(to_plot):
+        key = 100 + total * 10 + (i+1) # always horizontal
+
+        ax = fig.add_subplot(key)
+        weights_normalized = matrix
+        im = ax.imshow(weights_normalized.T, vmin=g_min, vmax=g_max,
+                       interpolation='nearest', origin='lower')
+        ax.set_xlabel('input neurons')
+        ax.set_ylabel('output neurons')
+
+    try:
+        axc = fig.add_axes([0.1, 0.1, 0.8, 0.05]) # setup colorbar axes.
+        bar = plt.colorbar(im, cax=axc, orientation='horizontal')
+        labels = [round((g_min + (x * delta/10.0)), 2) for x in range(11)]
+        bar.set_ticks(labels)
+        bar.set_ticklabels([str(x) for x in labels])
+    except NameError:
+        pass
 
     return fig
